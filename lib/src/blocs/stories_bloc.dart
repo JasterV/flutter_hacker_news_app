@@ -8,8 +8,8 @@ class StoriesBloc {
   final _itemsOutput = BehaviorSubject<Map<int, Future<ItemModel>>>();
   final _itemsFetch = BehaviorSubject<int>();
 
-  StoriesBloc(){
-  _itemsFetch.stream.transform(_itemsTransformer()).pipe(_itemsOutput);
+  StoriesBloc() {
+    _itemsFetch.stream.transform(_itemsTransformer()).pipe(_itemsOutput);
   }
 
   Stream<List<int>> get topIds$ => _topIds.stream;
@@ -17,11 +17,15 @@ class StoriesBloc {
 
   Function(int) get addItem => _itemsFetch.sink.add;
 
-  fetchTopIds() async {
+  Future<void> fetchTopIds() async {
     _topIds.add(await _repository.fetchtopIds());
   }
 
- _itemsTransformer() {
+  Future<void> clearCache() async {
+    return _repository.clearCache();
+  }
+
+  _itemsTransformer() {
     return ScanStreamTransformer(
       (Map<int, Future<ItemModel>> cache, int id, int index) {
         cache[id] = _repository.fetchItem(id);
